@@ -1,4 +1,4 @@
-import sqlite3
+from psycopg import Connection
 
 from app.core.errors import ConflictError, NotFoundError
 from .repository import ProfileRepository
@@ -10,7 +10,7 @@ def _url(value):
 
 
 class ProfileService:
-    def __init__(self, db: sqlite3.Connection):
+    def __init__(self, db: Connection):
         self.repo = ProfileRepository(db)
 
     def create(self, data: ProfileCreate) -> ProfileResponse:
@@ -26,5 +26,5 @@ class ProfileService:
         row = self.repo.find_by_id(profile_id)
         if row is None:
             raise NotFoundError(f"Perfil {profile_id} não encontrado.")
-        projects = [ProjectSummary(**dict(p)) for p in self.repo.find_projects(profile_id)]
-        return ProfileResponse(**dict(row), total_projects=len(projects), projects=projects)
+        projects = [ProjectSummary(**p) for p in self.repo.find_projects(profile_id)]
+        return ProfileResponse(**row, total_projects=len(projects), projects=projects)

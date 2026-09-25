@@ -1,6 +1,7 @@
+from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
 
 from app.core.types import OptionalText, RequiredText
 from app.modules.feedbacks.schemas import FeedbackResponse
@@ -9,6 +10,15 @@ from app.modules.technologies.schemas import TechnologyResponse
 
 class ProjectCreate(BaseModel):
     """DTO de entrada para cadastrar um projeto no portfólio."""
+    model_config = ConfigDict(json_schema_extra={"examples": [{
+        "profile_id": 1,
+        "title": "Cardápio Digital",
+        "summary": "Cardápio online de lanchonete com pedidos pelo celular",
+        "repo_url": "https://github.com/elismarcarvalho/cardapio-digital",
+        "live_url": None,
+        "technology_ids": [1, 2, 3],
+    }]})
+
     profile_id: int = Field(gt=0)
     title: RequiredText
     summary: Optional[OptionalText] = None
@@ -34,8 +44,18 @@ class ProjectResponse(BaseModel):
     summary: Optional[str] = None
     repo_url: str
     live_url: Optional[str] = None
-    created_at: str
+    stars: int
+    average_rating: Optional[float] = None   # nula até o primeiro feedback
+    created_at: datetime
     owner: ProjectOwner
     technologies: list[TechnologyResponse]
     feedbacks: list[FeedbackResponse]
-    average_rating: Optional[float] = None
+
+
+class ProjectPage(BaseModel):
+    """Uma página da listagem de projetos."""
+    total: int
+    page: int
+    per_page: int
+    total_pages: int
+    results: list[ProjectResponse]

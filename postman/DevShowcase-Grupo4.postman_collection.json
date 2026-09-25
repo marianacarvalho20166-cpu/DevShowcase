@@ -1,20 +1,145 @@
 {
   "info": {
     "name": "DevShowcase API - Grupo 4",
+    "description": "Coleção da DevShowcase API (Grupo 4: Elismar, Mariana e Kaenny).\n\n1. Ajuste a variável da coleção `baseUrl` (localhost ou a URL do Render).\n2. Rode a pasta **0 - Popular banco** primeiro: ela cadastra tecnologias, perfis e projetos e guarda os ids em variáveis. Pode ser rodada de novo sem quebrar.\n3. Siga as pastas na ordem. Os casos de erro ficam no fim de cada pasta.\n4. Dá para clicar Send de novo em qualquer requisição ou rodar de novo só uma pasta: estrelas, médias e totais são conferidos em relação ao valor de antes da requisição, não a um número fixo.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://127.0.0.1:8000"
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "pythonId",
+      "value": ""
+    },
+    {
+      "key": "fastapiId",
+      "value": ""
+    },
+    {
+      "key": "postgresqlId",
+      "value": ""
+    },
+    {
+      "key": "javascriptId",
+      "value": ""
+    },
+    {
+      "key": "htmlId",
+      "value": ""
+    },
+    {
+      "key": "elismarId",
+      "value": ""
+    },
+    {
+      "key": "kaennyId",
+      "value": ""
+    },
+    {
+      "key": "marianaId",
+      "value": ""
+    },
+    {
+      "key": "marianaEmail",
+      "value": ""
+    },
+    {
+      "key": "marianaEmailMaiusculo",
+      "value": ""
+    },
+    {
+      "key": "cardapioId",
+      "value": ""
+    },
+    {
+      "key": "academiaId",
+      "value": ""
+    },
+    {
+      "key": "portfolioId",
+      "value": ""
+    },
+    {
+      "key": "bibliotecaId",
+      "value": ""
+    },
+    {
+      "key": "tarefasId",
+      "value": ""
+    },
+    {
+      "key": "imcId",
+      "value": ""
+    },
+    {
+      "key": "agendaId",
+      "value": ""
+    },
+    {
+      "key": "totalPython",
+      "value": ""
+    },
+    {
+      "key": "estrelasAntes",
+      "value": ""
+    },
+    {
+      "key": "notasAntes",
+      "value": ""
+    },
+    {
+      "key": "somaAntes",
+      "value": ""
     }
   ],
   "item": [
     {
-      "name": "1 - Tecnologias",
+      "name": "0 - Popular banco",
+      "description": "Prepara o banco (vazio ou já usado): tecnologias aceitam 201 ou 409, e-mails usam {{$timestamp}} e os ids ficam em variáveis da coleção.",
       "item": [
         {
-          "name": "POST Cadastrar Python",
+          "name": "GET API no ar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"API respondeu ok\", () => pm.expect(pm.response.json().status).to.eql(\"ok\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST Tecnologia Python",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 (ou 409 se já estava cadastrada)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -45,7 +170,18 @@
           }
         },
         {
-          "name": "POST Cadastrar FastAPI",
+          "name": "POST Tecnologia FastAPI",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 (ou 409 se já estava cadastrada)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -76,7 +212,18 @@
           }
         },
         {
-          "name": "POST Cadastrar SQLite",
+          "name": "POST Tecnologia PostgreSQL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 (ou 409 se já estava cadastrada)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -97,7 +244,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"SQLite\",\n  \"category\": \"Banco de dados\"\n}",
+              "raw": "{\n  \"name\": \"PostgreSQL\",\n  \"category\": \"Banco de dados\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -107,7 +254,109 @@
           }
         },
         {
-          "name": "GET Listar tecnologias",
+          "name": "POST Tecnologia JavaScript",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 (ou 409 se já estava cadastrada)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/technologies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "technologies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"JavaScript\",\n  \"category\": \"Linguagem\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Tecnologia HTML",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 (ou 409 se já estava cadastrada)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/technologies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "technologies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"HTML\",\n  \"category\": \"Marcação\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET Tecnologias (guarda os ids)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const techs = pm.response.json();",
+                  "const variaveis = { python: \"pythonId\", fastapi: \"fastapiId\", postgresql: \"postgresqlId\", javascript: \"javascriptId\", html: \"htmlId\" };",
+                  "Object.entries(variaveis).forEach(([nome, variavel]) => {",
+                  "    const tech = techs.find(t => t.name.toLowerCase() === nome);",
+                  "    pm.test(`Tecnologia ${nome} cadastrada`, () => pm.expect(tech).to.be.an(\"object\"));",
+                  "    if (tech) pm.collectionVariables.set(variavel, tech.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -124,7 +373,477 @@
           }
         },
         {
-          "name": "ERRO - Tecnologia sem nome (422)",
+          "name": "POST Perfil da Elismar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - perfil criado\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"elismarId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/profiles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profiles"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Elismar Francelina de Carvalho\",\n  \"email\": \"elismar.carvalho.{{$timestamp}}@email.com\",\n  \"headline\": \"Desenvolvedora back-end em formação\",\n  \"github_url\": \"https://github.com/elismarcarvalho\",\n  \"linkedin_url\": \"https://www.linkedin.com/in/elismarcarvalho\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Perfil da Kaenny",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - perfil criado\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"kaennyId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/profiles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "profiles"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Kaenny Ribeiro Granja\",\n  \"email\": \"kaenny.granja.{{$timestamp}}@email.com\",\n  \"headline\": \"Desenvolvedora front-end\",\n  \"github_url\": \"https://github.com/kaennygranja\",\n  \"linkedin_url\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Projeto Cardápio Digital",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - projeto criado\", () => pm.response.to.have.status(201));",
+                  "const projeto = pm.response.json();",
+                  "pm.test(\"Projeto com 3 tecnologias e sem estrelas\", () => {",
+                  "    pm.expect(projeto.technologies).to.have.lengthOf(3);",
+                  "    pm.expect(projeto.stars).to.eql(0);",
+                  "});",
+                  "pm.collectionVariables.set(\"cardapioId\", projeto.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": {{elismarId}},\n  \"title\": \"Cardápio Digital\",\n  \"summary\": \"Cardápio online de lanchonete com pedidos pelo celular\",\n  \"repo_url\": \"https://github.com/elismarcarvalho/cardapio-digital\",\n  \"live_url\": null,\n  \"technology_ids\": [{{pythonId}}, {{fastapiId}}, {{postgresqlId}}]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Projeto Controle de Academia",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - projeto criado\", () => pm.response.to.have.status(201));",
+                  "const projeto = pm.response.json();",
+                  "pm.test(\"Projeto com 3 tecnologias e sem estrelas\", () => {",
+                  "    pm.expect(projeto.technologies).to.have.lengthOf(3);",
+                  "    pm.expect(projeto.stars).to.eql(0);",
+                  "});",
+                  "pm.collectionVariables.set(\"academiaId\", projeto.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": {{kaennyId}},\n  \"title\": \"Controle de Academia\",\n  \"summary\": \"Cadastro de alunos, planos e mensalidades de uma academia\",\n  \"repo_url\": \"https://github.com/kaennygranja/controle-academia\",\n  \"live_url\": null,\n  \"technology_ids\": [{{pythonId}}, {{fastapiId}}, {{postgresqlId}}]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Projeto Portfólio Pessoal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - projeto criado\", () => pm.response.to.have.status(201));",
+                  "const projeto = pm.response.json();",
+                  "pm.test(\"Projeto com 2 tecnologias e sem estrelas\", () => {",
+                  "    pm.expect(projeto.technologies).to.have.lengthOf(2);",
+                  "    pm.expect(projeto.stars).to.eql(0);",
+                  "});",
+                  "pm.collectionVariables.set(\"portfolioId\", projeto.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": {{kaennyId}},\n  \"title\": \"Portfólio Pessoal\",\n  \"summary\": \"Página pessoal com projetos e contatos\",\n  \"repo_url\": \"https://github.com/kaennygranja/portfolio\",\n  \"live_url\": null,\n  \"technology_ids\": [{{htmlId}}, {{javascriptId}}]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Projeto Biblioteca da Turma",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - projeto criado\", () => pm.response.to.have.status(201));",
+                  "const projeto = pm.response.json();",
+                  "pm.test(\"Projeto com 2 tecnologias e sem estrelas\", () => {",
+                  "    pm.expect(projeto.technologies).to.have.lengthOf(2);",
+                  "    pm.expect(projeto.stars).to.eql(0);",
+                  "});",
+                  "pm.collectionVariables.set(\"bibliotecaId\", projeto.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": {{elismarId}},\n  \"title\": \"Biblioteca da Turma\",\n  \"summary\": \"Empréstimo de livros entre colegas de sala\",\n  \"repo_url\": \"https://github.com/elismarcarvalho/biblioteca-da-turma\",\n  \"live_url\": null,\n  \"technology_ids\": [{{pythonId}}, {{postgresqlId}}]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Projeto Lista de Tarefas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - projeto criado\", () => pm.response.to.have.status(201));",
+                  "const projeto = pm.response.json();",
+                  "pm.test(\"Projeto com 2 tecnologias e sem estrelas\", () => {",
+                  "    pm.expect(projeto.technologies).to.have.lengthOf(2);",
+                  "    pm.expect(projeto.stars).to.eql(0);",
+                  "});",
+                  "pm.collectionVariables.set(\"tarefasId\", projeto.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": {{kaennyId}},\n  \"title\": \"Lista de Tarefas\",\n  \"summary\": \"Lista de tarefas que salva no navegador\",\n  \"repo_url\": \"https://github.com/kaennygranja/lista-de-tarefas\",\n  \"live_url\": null,\n  \"technology_ids\": [{{javascriptId}}, {{htmlId}}]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Projeto Calculadora de IMC",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - projeto criado\", () => pm.response.to.have.status(201));",
+                  "const projeto = pm.response.json();",
+                  "pm.test(\"Projeto com 2 tecnologias e sem estrelas\", () => {",
+                  "    pm.expect(projeto.technologies).to.have.lengthOf(2);",
+                  "    pm.expect(projeto.stars).to.eql(0);",
+                  "});",
+                  "pm.collectionVariables.set(\"imcId\", projeto.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": {{elismarId}},\n  \"title\": \"Calculadora de IMC\",\n  \"summary\": \"Calcula o IMC e mostra a faixa de peso\",\n  \"repo_url\": \"https://github.com/elismarcarvalho/calculadora-imc\",\n  \"live_url\": null,\n  \"technology_ids\": [{{javascriptId}}, {{htmlId}}]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1 - Tecnologias",
+      "description": "Cadastro e listagem de tecnologias (etapa 1).",
+      "item": [
+        {
+          "name": "POST Cadastrar tecnologia",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 (ou 409 se o Docker já foi cadastrado antes)\", () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/technologies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "technologies"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Docker\",\n  \"category\": \"Ferramenta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET Listar tecnologias",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const nomes = pm.response.json().map(t => t.name);",
+                  "pm.test(\"Lista traz Python, FastAPI e PostgreSQL\", () => pm.expect(nomes).to.include.members([\"Python\", \"FastAPI\", \"PostgreSQL\"]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/technologies",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "technologies"
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERRO - Tecnologia sem nome (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"POST /api/technologies\");",
+                  "});",
+                  "pm.test(\"Aponta o campo name\", () => pm.expect(erro.campos.name).to.eql(\"Não pode ficar vazio.\"));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -156,6 +875,23 @@
         },
         {
           "name": "ERRO - Tecnologia repetida (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(409);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"POST /api/technologies\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -189,9 +925,25 @@
     },
     {
       "name": "2 - Perfis",
+      "description": "Cadastro e busca de perfis (etapa 1).",
       "item": [
         {
           "name": "POST Cadastrar perfil",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - perfil criado\", () => pm.response.to.have.status(201));",
+                  "const perfil = pm.response.json();",
+                  "pm.test(\"Perfil começa sem projetos\", () => pm.expect(perfil.total_projects).to.eql(0));",
+                  "pm.collectionVariables.set(\"marianaId\", perfil.id);",
+                  "pm.collectionVariables.set(\"marianaEmail\", perfil.email);"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -212,7 +964,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_name\": \"Mariana Gomes Carvalho\",\n  \"email\": \"mariana.gomes@email.com\",\n  \"headline\": \"Estudante de Sistemas para Internet\",\n  \"github_url\": \"https://github.com/marianagomes\",\n  \"linkedin_url\": \"https://www.linkedin.com/in/marianagomes\"\n}",
+              "raw": "{\n  \"full_name\": \"Mariana Gomes Carvalho\",\n  \"email\": \"mariana.gomes.{{$timestamp}}@email.com\",\n  \"headline\": \"Estudante de Sistemas para Internet\",\n  \"github_url\": \"https://github.com/marianagomes\",\n  \"linkedin_url\": \"https://www.linkedin.com/in/marianagomes\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -222,25 +974,55 @@
           }
         },
         {
-          "name": "GET Buscar perfil 1",
+          "name": "GET Buscar perfil",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Perfil da Mariana\", () => pm.expect(pm.response.json().full_name).to.eql(\"Mariana Gomes Carvalho\"));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/profiles/1",
+              "raw": "{{baseUrl}}/api/profiles/{{marianaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "profiles",
-                "1"
+                "{{marianaId}}"
               ]
             }
           }
         },
         {
-          "name": "ERRO - Dados inválidos (422)",
+          "name": "ERRO - Dados inválidos (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"POST /api/profiles\");",
+                  "});",
+                  "pm.test(\"Aponta os três campos\", () => pm.expect(erro.campos).to.have.all.keys(\"full_name\", \"email\", \"github_url\"));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -272,6 +1054,33 @@
         },
         {
           "name": "ERRO - E-mail repetido (409)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// mesmo e-mail em maiúsculas: a API não diferencia",
+                  "pm.collectionVariables.set(\"marianaEmailMaiusculo\", pm.collectionVariables.get(\"marianaEmail\").toUpperCase());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(409);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"POST /api/profiles\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -292,7 +1101,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_name\": \"Outra Pessoa\",\n  \"email\": \"mariana.gomes@email.com\"\n}",
+              "raw": "{\n  \"full_name\": \"Outra Pessoa\",\n  \"email\": \"{{marianaEmailMaiusculo}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -303,18 +1112,35 @@
         },
         {
           "name": "ERRO - Perfil inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(404);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"GET /api/profiles/999999\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/profiles/999",
+              "raw": "{{baseUrl}}/api/profiles/999999",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "profiles",
-                "999"
+                "999999"
               ]
             }
           }
@@ -323,9 +1149,29 @@
     },
     {
       "name": "3 - Projetos",
+      "description": "Cadastro de projetos ligados a perfil e tecnologias (etapa 1).",
       "item": [
         {
           "name": "POST Cadastrar projeto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - projeto criado\", () => pm.response.to.have.status(201));",
+                  "const projeto = pm.response.json();",
+                  "pm.test(\"Dono, tecnologias, estrelas e média\", () => {",
+                  "    pm.expect(projeto.owner.full_name).to.eql(\"Mariana Gomes Carvalho\");",
+                  "    pm.expect(projeto.technologies).to.have.lengthOf(3);",
+                  "    pm.expect(projeto.stars).to.eql(0);",
+                  "    pm.expect(projeto.average_rating).to.be.null;",
+                  "});",
+                  "pm.collectionVariables.set(\"agendaId\", projeto.id);"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -346,7 +1192,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"profile_id\": 1,\n  \"title\": \"Agenda Escolar\",\n  \"summary\": \"API para organizar tarefas e provas da turma\",\n  \"repo_url\": \"https://github.com/marianagomes/agenda-escolar\",\n  \"live_url\": null,\n  \"technology_ids\": [\n    1,\n    2,\n    3\n  ]\n}",
+              "raw": "{\n  \"profile_id\": {{marianaId}},\n  \"title\": \"Agenda Escolar\",\n  \"summary\": \"API para organizar tarefas e provas da turma\",\n  \"repo_url\": \"https://github.com/marianagomes/agenda-escolar\",\n  \"live_url\": null,\n  \"technology_ids\": [{{pythonId}}, {{fastapiId}}, {{postgresqlId}}]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -357,6 +1203,29 @@
         },
         {
           "name": "GET Listar projetos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const pagina = pm.response.json();",
+                  "pm.test(\"Resposta paginada\", () => {",
+                  "    pm.expect(pagina).to.have.all.keys(\"total\", \"page\", \"per_page\", \"total_pages\", \"results\");",
+                  "    pm.expect(pagina.page).to.eql(1);",
+                  "    pm.expect(pagina.per_page).to.eql(5);",
+                  "});",
+                  "pm.test(\"Projeto mais novo aparece primeiro\", () => {",
+                  "    const ids = pagina.results.map(p => p.id);",
+                  "    pm.expect(ids).to.eql([...ids].sort((a, b) => b - a));",
+                  "    // o primeiro é o Agenda Escolar ou um projeto cadastrado depois dele",
+                  "    pm.expect(ids[0]).to.be.at.least(Number(pm.collectionVariables.get(\"agendaId\")));",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -374,24 +1243,58 @@
         },
         {
           "name": "GET Perfil com o projeto (1:N)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const perfil = pm.response.json();",
+                  "pm.test(\"Perfil lista o projeto cadastrado\", () => {",
+                  "    pm.expect(perfil.projects.map(p => p.id)).to.include(Number(pm.collectionVariables.get(\"agendaId\")));",
+                  "    pm.expect(perfil.total_projects).to.eql(perfil.projects.length);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/profiles/1",
+              "raw": "{{baseUrl}}/api/profiles/{{marianaId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "profiles",
-                "1"
+                "{{marianaId}}"
               ]
             }
           }
         },
         {
-          "name": "ERRO - Título vazio e URL inválida (422)",
+          "name": "ERRO - Título vazio e URL inválida (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"POST /api/projects\");",
+                  "});",
+                  "pm.test(\"Aponta title e repo_url\", () => pm.expect(erro.campos).to.have.all.keys(\"title\", \"repo_url\"));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -412,7 +1315,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"profile_id\": 1,\n  \"title\": \"\",\n  \"repo_url\": \"meu-repo\"\n}",
+              "raw": "{\n  \"profile_id\": {{marianaId}},\n  \"title\": \"\",\n  \"repo_url\": \"meu-repo\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -423,6 +1326,23 @@
         },
         {
           "name": "ERRO - Perfil inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(404);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"POST /api/projects\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -443,7 +1363,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"profile_id\": 999,\n  \"title\": \"Projeto X\",\n  \"repo_url\": \"https://github.com/x/projeto-x\"\n}",
+              "raw": "{\n  \"profile_id\": 999999,\n  \"title\": \"Projeto X\",\n  \"repo_url\": \"https://github.com/x/projeto-x\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -454,6 +1374,23 @@
         },
         {
           "name": "ERRO - Tecnologia inexistente (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"POST /api/projects\");",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -474,13 +1411,971 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"profile_id\": 1,\n  \"title\": \"Projeto Y\",\n  \"repo_url\": \"https://github.com/y/projeto-y\",\n  \"technology_ids\": [\n    1,\n    50\n  ]\n}",
+              "raw": "{\n  \"profile_id\": {{marianaId}},\n  \"title\": \"Projeto Y\",\n  \"repo_url\": \"https://github.com/y/projeto-y\",\n  \"technology_ids\": [{{pythonId}}, 999999]\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - Listagem com filtro e páginas",
+      "description": "GET /api/projects com filtro por tecnologia (sem diferenciar maiúsculas) e paginação.",
+      "item": [
+        {
+          "name": "GET Página 1 (5 por página)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const pagina = pm.response.json();",
+                  "pm.test(\"No máximo 5 projetos na página\", () => pm.expect(pagina.results.length).to.be.at.most(5));",
+                  "pm.test(\"Total de páginas confere com o total\", () => pm.expect(pagina.total_pages).to.eql(Math.ceil(pagina.total / 5)));",
+                  "pm.test(\"Do mais novo para o mais antigo\", () => {",
+                  "    const ids = pagina.results.map(p => p.id);",
+                  "    pm.expect(ids).to.eql([...ids].sort((a, b) => b - a));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?page=1&per_page=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Página 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const pagina = pm.response.json();",
+                  "pm.test(\"Página 2\", () => pm.expect(pagina.page).to.eql(2));",
+                  "pm.test(\"Tem projetos (o banco populado tem mais de 5)\", () => pm.expect(pagina.results.length).to.be.above(0));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?page=2&per_page=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "per_page",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Filtro por tecnologia (python)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const pagina = pm.response.json();",
+                  "pm.test(\"Todos os projetos usam Python\", () => {",
+                  "    pm.expect(pagina.results.length).to.be.above(0);",
+                  "    pagina.results.forEach(p => pm.expect(p.technologies.map(t => t.name.toLowerCase())).to.include(\"python\"));",
+                  "});",
+                  "pm.test(\"Traz os projetos com Python cadastrados pela coleção\", () => {",
+                  "    const ids = pagina.results.map(p => p.id);",
+                  "    // a página traz os mais novos: projeto com Python mais novo que o último da página tem que estar nela",
+                  "    [pm.collectionVariables.get(\"agendaId\"), pm.collectionVariables.get(\"cardapioId\")]",
+                  "        .map(Number)",
+                  "        .filter(id => id >= Math.min(...ids))",
+                  "        .forEach(id => pm.expect(ids).to.include(id));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?tech=python",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "tech",
+                  "value": "python"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Filtro em maiúsculas (PYTHON, 2 por página)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// total do filtro em minúsculas, buscado agora, para comparar com o PYTHON",
+                  "pm.sendRequest(pm.variables.replaceIn(\"{{baseUrl}}/api/projects?tech=python&per_page=1\"), (err, res) => {",
+                  "    if (!err && res.code === 200) pm.collectionVariables.set(\"totalPython\", res.json().total);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const pagina = pm.response.json();",
+                  "// totalPython: buscado com tech=python no Pre-request desta requisição",
+                  "pm.test(\"Mesmo total do filtro em minúsculas\", () => pm.expect(pagina.total).to.eql(Number(pm.collectionVariables.get(\"totalPython\"))));",
+                  "pm.test(\"2 por página e total de páginas certo\", () => {",
+                  "    pm.expect(pagina.results).to.have.lengthOf(2);",
+                  "    pm.expect(pagina.total_pages).to.eql(Math.ceil(pagina.total / 2));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?tech=PYTHON&per_page=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "tech",
+                  "value": "PYTHON"
+                },
+                {
+                  "key": "per_page",
+                  "value": "2"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Filtro PyThOn, página 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const pagina = pm.response.json();",
+                  "pm.test(\"Página 2 do filtro, só projetos com Python\", () => {",
+                  "    pm.expect(pagina.page).to.eql(2);",
+                  "    pm.expect(pagina.results.length).to.be.above(0);",
+                  "    pagina.results.forEach(p => pm.expect(p.technologies.map(t => t.name.toLowerCase())).to.include(\"python\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?tech=PyThOn&page=2&per_page=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "tech",
+                  "value": "PyThOn"
+                },
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "per_page",
+                  "value": "2"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET Página além do fim (lista vazia)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const pagina = pm.response.json();",
+                  "pm.test(\"Lista vazia, mas com os totais\", () => {",
+                  "    pm.expect(pagina.results).to.be.an(\"array\").that.is.empty;",
+                  "    pm.expect(pagina.total).to.be.above(0);",
+                  "    pm.expect(pagina.page).to.eql(9999);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?page=9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "9999"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERRO - Página zero (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"GET /api/projects\");",
+                  "});",
+                  "pm.test(\"Aponta o parâmetro page\", () => pm.expect(erro.campos.page).to.eql(\"Deve ser no mínimo 1.\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?page=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERRO - Mais de 20 por página (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"GET /api/projects\");",
+                  "});",
+                  "pm.test(\"Aponta o parâmetro per_page\", () => pm.expect(erro.campos.per_page).to.eql(\"Deve ser no máximo 20.\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?per_page=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERRO - Página com texto (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"GET /api/projects\");",
+                  "});",
+                  "pm.test(\"Aponta o parâmetro page\", () => pm.expect(erro.campos.page).to.eql(\"Deve ser um número inteiro.\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?page=abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "abc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERRO - Rota inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(404);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"GET /api/projetos\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projetos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projetos"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 - Estrelas (upvote)",
+      "description": "PUT /api/projects/{id}/upvote: soma 1 estrela de forma atômica no banco.\n\nO Pre-request da pasta guarda as estrelas do Cardápio Digital antes de cada requisição (estrelasAntes), então os testes conferem +1 mesmo clicando Send de novo.",
+      "item": [
+        {
+          "name": "PUT Estrela no Cardápio Digital",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const projeto = pm.response.json();",
+                  "const antes = Number(pm.collectionVariables.get(\"estrelasAntes\"));  // guardado pelo Pre-request da pasta",
+                  "pm.test(`Somou 1 estrela (${antes} -> ${antes + 1})`, () => {",
+                  "    pm.expect(projeto.id).to.eql(Number(pm.collectionVariables.get(\"cardapioId\")));",
+                  "    pm.expect(projeto.stars).to.eql(antes + 1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{cardapioId}}/upvote",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{cardapioId}}",
+                "upvote"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT Mais uma estrela",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const projeto = pm.response.json();",
+                  "const antes = Number(pm.collectionVariables.get(\"estrelasAntes\"));  // guardado pelo Pre-request da pasta",
+                  "pm.test(`Somou 1 estrela (${antes} -> ${antes + 1})`, () => {",
+                  "    pm.expect(projeto.id).to.eql(Number(pm.collectionVariables.get(\"cardapioId\")));",
+                  "    pm.expect(projeto.stars).to.eql(antes + 1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{cardapioId}}/upvote",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{cardapioId}}",
+                "upvote"
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERRO - Projeto inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(404);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"PUT /api/projects/999999/upvote\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/999999/upvote",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "999999",
+                "upvote"
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERRO - Id com texto (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"PUT /api/projects/abc/upvote\");",
+                  "});",
+                  "pm.test(\"Aponta o id da rota\", () => pm.expect(erro.campos.project_id).to.eql(\"Deve ser um número inteiro.\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/abc/upvote",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "abc",
+                "upvote"
+              ]
+            }
+          }
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Antes de cada requisição da pasta: guarda quantas estrelas o Cardápio Digital tem agora.",
+              "// Se cardapioId estiver vazio (pasta rodada sozinha), usa o Cardápio Digital mais novo.",
+              "const id = Number(pm.collectionVariables.get(\"cardapioId\"));",
+              "const buscar = (pagina) => pm.sendRequest(pm.variables.replaceIn(`{{baseUrl}}/api/projects?per_page=20&page=${pagina}`), (err, res) => {",
+              "    if (err || res.code !== 200) return;",
+              "    const dados = res.json();",
+              "    const projeto = dados.results.find(p => id ? p.id === id : p.title === \"Cardápio Digital\");",
+              "    if (projeto) {",
+              "        pm.collectionVariables.set(\"cardapioId\", projeto.id);",
+              "        pm.collectionVariables.set(\"estrelasAntes\", projeto.stars);",
+              "    } else if (pagina < dados.total_pages) {",
+              "        buscar(pagina + 1);",
+              "    }",
+              "});",
+              "buscar(1);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 - Feedbacks e média",
+      "description": "POST /api/projects/{id}/feedbacks: nota de 1 a 5 e recálculo da média do projeto.\n\nO Pre-request da pasta guarda quantas notas o Controle de Academia já tem e a soma delas (notasAntes, somaAntes), então os testes conferem a média recalculada mesmo clicando Send de novo.",
+      "item": [
+        {
+          "name": "POST Feedback nota 5",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - feedback criado\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "// média esperada = (soma das notas de antes + nota enviada) / (quantidade de antes + 1), com 1 casa decimal",
+                  "const nota = JSON.parse(pm.request.body.raw).rating;",
+                  "const notas = Number(pm.collectionVariables.get(\"notasAntes\")) + 1;  // notasAntes e somaAntes: Pre-request da pasta",
+                  "const media = Math.round((Number(pm.collectionVariables.get(\"somaAntes\")) + nota) * 10 / notas) / 10;",
+                  "pm.test(`Nota ${nota} recalculou a média: ${media} com ${notas} nota(s)`, () => {",
+                  "    pm.expect(r.project_id).to.eql(Number(pm.collectionVariables.get(\"academiaId\")));",
+                  "    pm.expect(r.feedback.rating).to.eql(nota);",
+                  "    pm.expect(r.average_rating).to.eql(media);",
+                  "    pm.expect(r.ratings_count).to.eql(notas);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{academiaId}}/feedbacks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{academiaId}}",
+                "feedbacks"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Mariana Gomes Carvalho\",\n  \"comment\": \"Cadastro de alunos muito prático, ficou ótimo!\",\n  \"rating\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST Feedback nota 3 (recalcula a média)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - feedback criado\", () => pm.response.to.have.status(201));",
+                  "const r = pm.response.json();",
+                  "// média esperada = (soma das notas de antes + nota enviada) / (quantidade de antes + 1), com 1 casa decimal",
+                  "const nota = JSON.parse(pm.request.body.raw).rating;",
+                  "const notas = Number(pm.collectionVariables.get(\"notasAntes\")) + 1;  // notasAntes e somaAntes: Pre-request da pasta",
+                  "const media = Math.round((Number(pm.collectionVariables.get(\"somaAntes\")) + nota) * 10 / notas) / 10;",
+                  "pm.test(`Nota ${nota} recalculou a média: ${media} com ${notas} nota(s)`, () => {",
+                  "    pm.expect(r.project_id).to.eql(Number(pm.collectionVariables.get(\"academiaId\")));",
+                  "    pm.expect(r.feedback.rating).to.eql(nota);",
+                  "    pm.expect(r.average_rating).to.eql(media);",
+                  "    pm.expect(r.ratings_count).to.eql(notas);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{academiaId}}/feedbacks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{academiaId}}",
+                "feedbacks"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Elismar Francelina de Carvalho\",\n  \"comment\": \"Funciona bem, mas faltou um relatório de mensalidades.\",\n  \"rating\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET Média gravada no projeto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const projeto = pm.response.json().results.find(p => p.id === Number(pm.collectionVariables.get(\"academiaId\")));",
+                  "pm.test(\"Média gravada confere com as notas dos feedbacks do projeto\", () => {",
+                  "    pm.expect(projeto).to.be.an(\"object\");",
+                  "    const notas = projeto.feedbacks.map(f => f.rating);",
+                  "    const soma = notas.reduce((a, b) => a + b, 0);",
+                  "    pm.expect(projeto.average_rating).to.eql(notas.length ? Math.round(soma * 10 / notas.length) / 10 : null);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects?tech=postgresql&per_page=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ],
+              "query": [
+                {
+                  "key": "tech",
+                  "value": "postgresql"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "ERRO - Nota 6 e comentário vazio (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(`POST /api/projects/${Number(pm.collectionVariables.get(\"academiaId\"))}/feedbacks`);",
+                  "});",
+                  "pm.test(\"Aponta rating e comment\", () => {",
+                  "    pm.expect(erro.campos.rating).to.eql(\"Deve ser no máximo 5.\");",
+                  "    pm.expect(erro.campos.comment).to.eql(\"Não pode ficar vazio.\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{academiaId}}/feedbacks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{academiaId}}",
+                "feedbacks"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Kaenny Ribeiro Granja\",\n  \"comment\": \"\",\n  \"rating\": 6\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "ERRO - JSON malformado (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(400);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(`POST /api/projects/${Number(pm.collectionVariables.get(\"academiaId\"))}/feedbacks`);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/{{academiaId}}/feedbacks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "{{academiaId}}",
+                "feedbacks"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Kaenny Ribeiro Granja\",\n  \"rating\": 4,\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "ERRO - Projeto inexistente (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "const erro = pm.response.json();",
+                  "pm.test(\"Erro no formato padrão (status, erro, rota)\", () => {",
+                  "    pm.expect(erro.status).to.eql(404);",
+                  "    pm.expect(erro.erro).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(erro.rota).to.eql(\"POST /api/projects/999999/feedbacks\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/projects/999999/feedbacks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "999999",
+                "feedbacks"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"author_name\": \"Kaenny Ribeiro Granja\",\n  \"comment\": \"Projeto que não existe\",\n  \"rating\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Antes de cada requisição da pasta: guarda quantas notas o Controle de Academia já tem e a soma delas.",
+              "// Se academiaId estiver vazio (pasta rodada sozinha), usa o Controle de Academia mais novo.",
+              "const id = Number(pm.collectionVariables.get(\"academiaId\"));",
+              "const buscar = (pagina) => pm.sendRequest(pm.variables.replaceIn(`{{baseUrl}}/api/projects?per_page=20&page=${pagina}`), (err, res) => {",
+              "    if (err || res.code !== 200) return;",
+              "    const dados = res.json();",
+              "    const projeto = dados.results.find(p => id ? p.id === id : p.title === \"Controle de Academia\");",
+              "    if (projeto) {",
+              "        pm.collectionVariables.set(\"academiaId\", projeto.id);",
+              "        pm.collectionVariables.set(\"notasAntes\", projeto.feedbacks.length);",
+              "        pm.collectionVariables.set(\"somaAntes\", projeto.feedbacks.reduce((soma, f) => soma + f.rating, 0));",
+              "    } else if (pagina < dados.total_pages) {",
+              "        buscar(pagina + 1);",
+              "    }",
+              "});",
+              "buscar(1);"
+            ]
           }
         }
       ]

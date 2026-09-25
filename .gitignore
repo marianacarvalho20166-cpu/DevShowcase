@@ -5,9 +5,10 @@ __pycache__/
 venv/
 env/
 
-# Banco de dados local (é recriado ao iniciar a API)
-*.db
-*.sqlite3
+# Variáveis de ambiente (credenciais do banco ficam fora do Git)
+.env
+.env.*
+!.env.example
 
 # Editores / SO
 .vscode/

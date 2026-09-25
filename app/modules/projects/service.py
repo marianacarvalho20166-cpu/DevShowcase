@@ -1,4 +1,7 @@
-import sqlite3
+import math
+from typing import Optional
+
+from psycopg import Connection
 
 from app.core.errors import BusinessError, NotFoundError
 from app.modules.feedbacks.repository import FeedbackRepository
@@ -7,7 +10,7 @@ from app.modules.profiles.repository import ProfileRepository
 from app.modules.technologies.repository import TechnologyRepository
 from app.modules.technologies.schemas import TechnologyResponse
 from .repository import ProjectRepository
-from .schemas import ProjectCreate, ProjectOwner, ProjectResponse
+from .schemas import ProjectCreate, ProjectOwner, ProjectPage, ProjectResponse
 
 
 def _url(value):
@@ -15,7 +18,7 @@ def _url(value):
 
 
 class ProjectService:
-    def __init__(self, db: sqlite3.Connection):
+    def __init__(self, db: Connection):
         self.repo = ProjectRepository(db)
         self.profiles = ProfileRepository(db)
         self.technologies = TechnologyRepository(db)
@@ -36,25 +39,39 @@ class ProjectService:
         self.repo.link_technologies(project_id, data.technology_ids)
         return self._to_response(self.repo.find_by_id(project_id))
 
-    def list_all(self) -> list[ProjectResponse]:
-        return [self._to_response(row) for row in self.repo.find_all()]
+    def list_page(self, tech: Optional[str], page: int, per_page: int) -> ProjectPage:
+        tech = tech.strip() if tech else None
+        total = self.repo.count(tech)
+        offset = (page - 1) * per_page
+        # página além do fim: nem consulta, devolve lista vazia
+        rows = self.repo.find_page(tech, per_page, offset) if offset < total else []
+        return ProjectPage(
+            total=total,
+            page=page,
+            per_page=per_page,
+            total_pages=math.ceil(total / per_page),
+            results=[self._to_response(row) for row in rows],
+        )
 
-    def _to_response(self, row: sqlite3.Row) -> ProjectResponse:
-        techs = [TechnologyResponse(**dict(t)) for t in self.technologies.find_by_project(row["id"])]
-        feedbacks = [
-            FeedbackResponse(**{k: f[k] for k in f.keys() if k != "project_id"})
-            for f in self.feedbacks.find_by_project(row["id"])
-        ]
-        average = round(sum(f.rating for f in feedbacks) / len(feedbacks), 1) if feedbacks else None
+    def upvote(self, project_id: int) -> ProjectResponse:
+        if self.repo.add_star(project_id) is None:
+            raise NotFoundError(f"Projeto {project_id} não encontrado.")
+        return self._to_response(self.repo.find_by_id(project_id))
+
+    def _to_response(self, row: dict) -> ProjectResponse:
+        techs = [TechnologyResponse(**t) for t in self.technologies.find_by_project(row["id"])]
+        feedbacks = [FeedbackResponse(**f) for f in self.feedbacks.find_by_project(row["id"])]
+        average = row["average_rating"]
         return ProjectResponse(
             id=row["id"],
             title=row["title"],
             summary=row["summary"],
             repo_url=row["repo_url"],
             live_url=row["live_url"],
+            stars=row["stars"],
+            average_rating=float(average) if average is not None else None,
             created_at=row["created_at"],
             owner=ProjectOwner(id=row["profile_id"], full_name=row["owner_name"]),
             technologies=techs,
             feedbacks=feedbacks,
-            average_rating=average,
         )

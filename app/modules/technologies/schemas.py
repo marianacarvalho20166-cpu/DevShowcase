@@ -1,12 +1,14 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.core.types import RequiredText
 
 
 class TechnologyCreate(BaseModel):
     """DTO de entrada para cadastrar uma tecnologia."""
+    model_config = ConfigDict(json_schema_extra={"examples": [{"name": "PostgreSQL", "category": "Banco de dados"}]})
+
     name: RequiredText
     category: Optional[RequiredText] = None  # ex.: Linguagem, Framework, Banco de dados
 
