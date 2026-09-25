@@ -7,16 +7,16 @@ from dotenv import load_dotenv
 from fastapi import Depends
 from psycopg.rows import dict_row
 
-load_dotenv()  # lê o .env local, se existir (no Render a variável vem do painel)
+load_dotenv()  # na máquina de quem desenvolve, carrega o .env; no Render a DATABASE_URL já vem do painel
 
 
 def _read_database_url() -> str:
     url = os.getenv("DATABASE_URL", "").strip()
     if not url:
         raise RuntimeError(
-            "A variável de ambiente DATABASE_URL não foi definida. "
-            "Informe a URL do PostgreSQL (ex.: postgresql://usuario:senha@localhost:5432/devshowcase) "
-            "no arquivo .env (veja o .env.example) ou nas variáveis de ambiente do Render."
+            "Falta a DATABASE_URL: sem ela a API não sabe em qual PostgreSQL entrar. "
+            "Na sua máquina, duplique o .env.example, renomeie a cópia para .env e preencha usuário, senha e banco; "
+            "no Render, cadastre a DATABASE_URL em Environment."
         )
     # aceita URLs no formato do SQLAlchemy (postgresql+psycopg://...) tirando o "+driver"
     scheme, sep, rest = url.partition("://")
@@ -35,15 +35,16 @@ CREATE TABLE IF NOT EXISTS profiles (
     linkedin_url TEXT,
     created_at   TIMESTAMP(0) NOT NULL DEFAULT now()
 );
--- e-mail único sem diferenciar maiúsculas
-CREATE UNIQUE INDEX IF NOT EXISTS uq_profiles_email ON profiles (LOWER(email));
+-- Ana@email.com e ana@email.com contam como o mesmo e-mail
+CREATE UNIQUE INDEX IF NOT EXISTS perfil_email_sem_repeticao ON profiles (LOWER(email));
 
 CREATE TABLE IF NOT EXISTS technologies (
     id       INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name     TEXT NOT NULL,
     category TEXT
 );
-CREATE UNIQUE INDEX IF NOT EXISTS uq_technologies_name ON technologies (LOWER(name));
+-- idem para tecnologias: Python e PYTHON não podem existir ao mesmo tempo
+CREATE UNIQUE INDEX IF NOT EXISTS tecnologia_nome_sem_repeticao ON technologies (LOWER(name));
 
 -- Profile 1:N Project
 CREATE TABLE IF NOT EXISTS projects (
@@ -54,7 +55,7 @@ CREATE TABLE IF NOT EXISTS projects (
     repo_url       TEXT         NOT NULL,
     live_url       TEXT,
     stars          INTEGER      NOT NULL DEFAULT 0,
-    average_rating NUMERIC(2,1),  -- fica nula até o primeiro feedback
+    average_rating NUMERIC(2,1),  -- NULL enquanto ninguém avaliou (não é o mesmo que nota zero)
     created_at     TIMESTAMP(0) NOT NULL DEFAULT now()
 );
 

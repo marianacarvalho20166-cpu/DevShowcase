@@ -1,21 +1,21 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
 from app.core.types import RequiredText
 
 
 class FeedbackCreate(BaseModel):
-    """DTO de entrada de um feedback: nota de 1 a 5 e comentário."""
+    """DTO de entrada do feedback: quem avaliou, o comentário e a nota."""
     model_config = ConfigDict(json_schema_extra={"examples": [{
         "author_name": "Mariana Gomes Carvalho",
-        "comment": "Interface simples e o cardápio carrega rápido no celular.",
+        "comment": "Marquei o banho da minha cachorra em dois cliques.",
         "rating": 5,
     }]})
 
     author_name: RequiredText
     comment: RequiredText
-    rating: int = Field(ge=1, le=5, strict=True)  # strict: recusa true, "4" e 4.0 em vez de converter
+    rating: StrictInt = Field(ge=1, le=5)
 
 
 class FeedbackResponse(BaseModel):
@@ -27,7 +27,7 @@ class FeedbackResponse(BaseModel):
 
 
 class FeedbackCreated(BaseModel):
-    """DTO de saída do cadastro: o feedback salvo e a nova média do projeto."""
+    """DTO de saída do cadastro: o feedback guardado e como ficou a média do projeto."""
     project_id: int
     feedback: FeedbackResponse
     average_rating: float

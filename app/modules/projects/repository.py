@@ -1,13 +1,13 @@
-from decimal import Decimal
 from typing import Optional
 
 from psycopg import Connection
 
-# Projetos que usam a tecnologia informada (sem diferenciar maiúsculas)
-TECH_FILTER = """ WHERE EXISTS (
-        SELECT 1 FROM project_technologies pt
-        JOIN technologies t ON t.id = pt.technology_id
-        WHERE pt.project_id = p.id AND LOWER(t.name) = LOWER(%s))"""
+# Só os projetos ligados à tecnologia pedida (o nome é comparado sem ligar para maiúsculas)
+FILTRO_TECNOLOGIA = """ WHERE p.id IN (
+        SELECT vinculo.project_id
+        FROM project_technologies vinculo
+        JOIN technologies tec ON tec.id = vinculo.technology_id
+        WHERE LOWER(tec.name) = LOWER(%s))"""
 
 
 class ProjectRepository:
@@ -37,22 +37,23 @@ class ProjectRepository:
     def find_by_id(self, project_id: int) -> Optional[dict]:
         return self.db.execute(self._select() + " WHERE p.id = %s", (project_id,)).fetchone()
 
-    def count(self, tech: Optional[str]) -> int:
+    def count_matching(self, tech: Optional[str]) -> int:
         sql, params = "SELECT COUNT(*) AS total FROM projects p", ()
         if tech:
-            sql, params = sql + TECH_FILTER, (tech,)
+            sql, params = sql + FILTRO_TECNOLOGIA, (tech,)
         return self.db.execute(sql, params).fetchone()["total"]
 
-    def find_page(self, tech: Optional[str], limit: int, offset: int) -> list[dict]:
+    def fetch_slice(self, tech: Optional[str], limit: int, offset: int) -> list[dict]:
         sql, params = self._select(), ()
         if tech:
-            sql, params = sql + TECH_FILTER, (tech,)
+            sql, params = sql + FILTRO_TECNOLOGIA, (tech,)
+        # mais recentes primeiro; o id desempata projetos criados no mesmo segundo
         return self.db.execute(
-            sql + " ORDER BY p.id DESC LIMIT %s OFFSET %s", (*params, limit, offset)
+            sql + " ORDER BY p.created_at DESC, p.id DESC LIMIT %s OFFSET %s", (*params, limit, offset)
         ).fetchall()
 
     def add_star(self, project_id: int) -> Optional[dict]:
-        # incremento atômico: o próprio banco soma, sem ler o valor antes
+        # o banco soma direto no UPDATE: dois cliques ao mesmo tempo viram +2, nenhum se perde
         return self.db.execute(
             "UPDATE projects SET stars = stars + 1 WHERE id = %s RETURNING id", (project_id,)
         ).fetchone()
@@ -62,7 +63,7 @@ class ProjectRepository:
             "SELECT id FROM projects WHERE id = %s FOR UPDATE", (project_id,)
         ).fetchone()
 
-    def update_average(self, project_id: int, average: Decimal) -> None:
+    def save_average(self, project_id: int, average: float) -> None:
         self.db.execute(
             "UPDATE projects SET average_rating = %s WHERE id = %s", (average, project_id)
         )

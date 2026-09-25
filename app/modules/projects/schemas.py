@@ -12,9 +12,9 @@ class ProjectCreate(BaseModel):
     """DTO de entrada para cadastrar um projeto no portfólio."""
     model_config = ConfigDict(json_schema_extra={"examples": [{
         "profile_id": 1,
-        "title": "Cardápio Digital",
-        "summary": "Cardápio online de lanchonete com pedidos pelo celular",
-        "repo_url": "https://github.com/elismarcarvalho/cardapio-digital",
+        "title": "Controle de Academia",
+        "summary": "Alunos, planos e mensalidades de uma academia de bairro",
+        "repo_url": "https://github.com/kaennygranja/controle-academia",
         "live_url": None,
         "technology_ids": [1, 2, 3],
     }]})
@@ -45,15 +45,15 @@ class ProjectResponse(BaseModel):
     repo_url: str
     live_url: Optional[str] = None
     stars: int
-    average_rating: Optional[float] = None   # nula até o primeiro feedback
+    average_rating: Optional[float] = None   # sem nenhum feedback ainda: null
     created_at: datetime
     owner: ProjectOwner
     technologies: list[TechnologyResponse]
     feedbacks: list[FeedbackResponse]
 
 
-class ProjectPage(BaseModel):
-    """Uma página da listagem de projetos."""
+class ProjectListing(BaseModel):
+    """Resultado da listagem: os totais do filtro e os projetos da página pedida."""
     total: int
     page: int
     per_page: int

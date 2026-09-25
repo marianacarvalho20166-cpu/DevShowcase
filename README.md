@@ -1,141 +1,61 @@
 # DevShowcase API — Grupo 4
 
-API REST de uma vitrine de projetos de desenvolvedores, feita em **Python 3.12 com FastAPI** e banco **PostgreSQL** acessado com o **psycopg 3** (consultas SQL escritas à mão nos repositórios, sem ORM).
+Uma vitrine onde cada pessoa desenvolvedora mostra os projetos que fez, conta quais tecnologias usou e recebe estrelas e feedbacks. A API é feita em **Python 3.12 com FastAPI** e guarda tudo num **PostgreSQL**, acessado pelo **psycopg 3** com o SQL escrito por nós nos repositórios (sem ORM).
 
 **Integrantes:** Elismar Francelina de Carvalho · Mariana Gomes Carvalho · Kaenny Ribeiro Granja
 
-**API em produção:** `https://URL-DO-RENDER.onrender.com` *(preencher depois do deploy)*
-**Documentação (Swagger):** `https://URL-DO-RENDER.onrender.com/docs`
+## Como testar em 2 minutos
 
-## Tecnologias
+1. Abra o Swagger:
+   - **no Render (produção):** https://devshowcase-grupo4.onrender.com/docs — a API fica em https://devshowcase-grupo4.onrender.com;
+   - **na sua máquina:** `http://127.0.0.1:8000/docs` (entrar só em `/` também leva para lá).
+2. Siga os grupos de rotas na ordem em que aparecem: **Perfis → Tecnologias → Projetos → Feedbacks**. Em cada rota é só clicar em *Try it out*, ajustar o exemplo e clicar em *Execute*.
+3. Prefere o Postman? Importe `postman/DevShowcase-Grupo4.postman_collection.json`, confira a variável `baseUrl` e rode a pasta **0 - Montar a vitrine** antes das outras.
 
-| Uso | Tecnologia |
-|---|---|
-| Linguagem | Python 3.12 |
-| Framework web | FastAPI + Uvicorn |
-| Validação dos DTOs | Pydantic 2 |
-| Banco de dados | PostgreSQL |
-| Acesso ao banco | psycopg 3 (SQL puro, sem ORM) |
-| Configuração | python-dotenv (`DATABASE_URL` no `.env`) |
-| Testes da API | Postman |
-| Hospedagem | Render |
+### Quais rotas existem?
 
-## Modelo de domínio
+| Método | Rota | Para que serve | Deu certo |
+|---|---|---|---|
+| POST | `/api/profiles` | cadastra a pessoa desenvolvedora (nome, e-mail e links) | 201 |
+| GET | `/api/profiles/{id}` | traz a pessoa e os projetos que ela publicou | 200 |
+| POST | `/api/technologies` | cadastra uma linguagem, framework ou banco | 201 |
+| GET | `/api/technologies` | lista as tecnologias, ordenadas pelo nome | 200 |
+| POST | `/api/projects` | publica um projeto, dizendo de quem é e quais tecnologias usa | 201 |
+| GET | `/api/projects` | lista os projetos; **na etapa 2** ganhou filtro `tech` e páginas | 200 |
+| PUT | `/api/projects/{id}/upvote` | **novo:** soma uma estrela ao projeto | 200 |
+| POST | `/api/projects/{id}/feedbacks` | **novo:** guarda um feedback com nota e refaz a média | 201 |
+| GET | `/health` | responde `{"status": "ok"}` quando a API está de pé | 200 |
 
-| Entidade | Relacionamentos |
-|---|---|
-| **Profile** (perfil do desenvolvedor) | 1:N com Project |
-| **Project** (projeto do portfólio, com estrelas e nota média) | N:1 com Profile · N:N com Technology · 1:N com Feedback |
-| **Technology** (linguagem, framework, banco…) | N:N com Project, pela tabela `project_technologies` |
-| **Feedback** (comentário e nota de 1 a 5) | N:1 com Project |
+## O que tem de novo na etapa 2?
 
-## Organização do código
+### 1. Como procurar projetos por tecnologia e andar pelas páginas?
 
-Cada entidade tem seu próprio módulo com quatro camadas:
+`GET /api/projects?tech=fastapi&page=1&per_page=1`
 
-```
-app/
-├── main.py                  # cria a aplicação, a documentação e registra as rotas
-├── core/
-│   ├── database.py          # conexão PostgreSQL (DATABASE_URL) e criação das tabelas
-│   ├── errors.py            # erros de negócio e manipulador global de erros
-│   └── types.py             # tipos de texto validados usados nos DTOs
-└── modules/
-    ├── profiles/            # schemas.py (DTOs) · repository.py · service.py · router.py
-    ├── technologies/
-    ├── projects/            # cadastro, listagem com filtro/paginação e upvote
-    └── feedbacks/           # feedbacks e cálculo da nota média
-postman/
-└── DevShowcase-Grupo4.postman_collection.json
-```
-
-- **schemas.py**: DTOs de entrada (com validação) e de saída.
-- **repository.py**: acesso ao banco com SQL.
-- **service.py**: regras de negócio (e-mail único, tecnologia sem repetição, perfil e tecnologias precisam existir, cálculo da média).
-- **router.py**: os endpoints HTTP.
-
-## Como executar localmente
-
-Pré-requisitos: Python 3.12 e um PostgreSQL rodando na máquina.
-
-1. Crie um banco vazio (pelo pgAdmin ou pelo terminal):
-
-   ```bash
-   psql -U postgres -c "CREATE DATABASE devshowcase;"
-   ```
-
-2. Copie o `.env.example` para `.env` e coloque a URL do seu banco:
-
-   ```
-   DATABASE_URL=postgresql://usuario:senha@localhost:5432/devshowcase
-   ```
-
-   O `.env` está no `.gitignore` e nunca vai para o GitHub.
-
-3. Instale as dependências e suba a API:
-
-   ```bash
-   python -m venv .venv
-   # Windows:
-   .venv\Scripts\activate
-   # Linux/Mac:
-   source .venv/bin/activate
-
-   pip install -r requirements.txt
-   uvicorn app.main:app --reload
-   ```
-
-A API sobe em `http://127.0.0.1:8000`. As tabelas são criadas sozinhas na primeira execução. Se a `DATABASE_URL` não estiver definida, a API não inicia e mostra a mensagem *"A variável de ambiente DATABASE_URL não foi definida..."*.
-
-## Documentação interativa
-
-- **Swagger:** `http://127.0.0.1:8000/docs` (a rota `/` redireciona para lá)
-- **OpenAPI (JSON):** `http://127.0.0.1:8000/openapi.json`
-
-Cada rota tem resumo, exemplo de corpo e as respostas de erro documentadas.
-
-## Endpoints
-
-| Método | Rota | Descrição |
+| Parâmetro | Se não mandar | O que aceita |
 |---|---|---|
-| POST | `/api/technologies` | Cadastra uma tecnologia |
-| GET | `/api/technologies` | Lista as tecnologias |
-| POST | `/api/profiles` | Cadastra um perfil |
-| GET | `/api/profiles/{id}` | Busca um perfil com seus projetos |
-| POST | `/api/projects` | Cadastra um projeto ligado a um perfil e a tecnologias |
-| GET | `/api/projects` | Lista os projetos com filtro por tecnologia e paginação |
-| PUT | `/api/projects/{id}/upvote` | Dá uma estrela ao projeto |
-| POST | `/api/projects/{id}/feedbacks` | Cadastra um feedback e recalcula a nota média |
-| GET | `/health` | Confere se a API está no ar |
-
-### Listar projetos com filtro e paginação
-
-`GET /api/projects?tech=python&page=1&per_page=5`
-
-| Parâmetro | Padrão | Regra |
-|---|---|---|
-| `tech` | — | nome da tecnologia, sem diferenciar maiúsculas (`python`, `PYTHON`, `Python`) |
-| `page` | 1 | número inteiro a partir de 1 |
-| `per_page` | 5 | número inteiro de 1 a 20 |
+| `tech` | traz todos os projetos | nome da tecnologia: `fastapi`, `FastAPI` e `FASTAPI` trazem os mesmos projetos. Se aparecer na URL, não pode vir vazio |
+| `page` | `1` | número inteiro a partir de 1 |
+| `per_page` | `5` | número inteiro de 1 a 20 |
 
 Resposta `200`:
 
 ```json
 {
-  "total": 7,
+  "total": 4,
   "page": 1,
-  "per_page": 5,
-  "total_pages": 2,
+  "per_page": 1,
+  "total_pages": 4,
   "results": [
     {
       "id": 7,
-      "title": "Agenda Escolar",
-      "summary": "API para organizar tarefas e provas da turma",
-      "repo_url": "https://github.com/marianagomes/agenda-escolar",
+      "title": "Escola de Música",
+      "summary": "Matrículas e horários das aulas de violão e teclado",
+      "repo_url": "https://github.com/marianagomes/escola-de-musica",
       "live_url": null,
       "stars": 0,
       "average_rating": null,
-      "created_at": "2026-09-25T15:57:48",
+      "created_at": "2026-09-25T17:25:10",
       "owner": { "id": 3, "full_name": "Mariana Gomes Carvalho" },
       "technologies": [
         { "id": 2, "name": "FastAPI", "category": "Framework" },
@@ -148,152 +68,260 @@ Resposta `200`:
 }
 ```
 
-Os projetos vêm do mais novo para o mais antigo. Uma página além do fim (ex.: `page=99`) responde `200` com `"results": []`. Página `0`, `per_page` acima de 20 ou texto no lugar de número respondem `400`.
+A ordem segue a data de publicação: quem foi publicado por último aparece primeiro (se dois projetos forem publicados no mesmo segundo, o de id maior vem antes). No SQL, o filtro é um `p.id IN (SELECT ... FROM project_technologies JOIN technologies ...)` que compara os nomes com `LOWER`, e o total vem de um `COUNT(*)` com o mesmo filtro.
 
-### Dar estrela (upvote)
+Pedir uma página depois da última não é erro: a resposta é `200`, com `results` vazio e os totais preenchidos, assim quem chamou sabe que a lista acabou. Já `per_page=0`, `page=primeira` ou `tech=` (sem valor) voltam `400`.
 
-`PUT /api/projects/1/upvote` (sem corpo). O banco soma a estrela de forma atômica (`SET stars = stars + 1`), então cliques ao mesmo tempo não se perdem.
+### 2. Como funciona a estrela (upvote)?
 
-Resposta `200`: o projeto atualizado, no mesmo formato da listagem, com `"stars"` somado (aqui era 2 e foi para 3):
+A chamada `PUT /api/projects/8/upvote` vai sem corpo nenhum. Cada uma soma 1 em `stars`, e quem soma é o PostgreSQL, no comando `UPDATE projects SET stars = stars + 1`, sem a API precisar consultar quantas estrelas havia. Por isso, se duas pessoas clicarem juntas na estrela do Pet Shop Agenda, ele ganha duas: nenhuma se perde.
+
+Resposta `200`: o projeto inteiro, já com a estrela contada (aqui é a segunda):
 
 ```json
 {
-  "id": 1,
-  "title": "Cardápio Digital",
-  "summary": "Cardápio online de lanchonete com pedidos pelo celular",
-  "repo_url": "https://github.com/elismarcarvalho/cardapio-digital",
+  "id": 8,
+  "title": "Pet Shop Agenda",
+  "summary": "Agenda de banho e tosa com lembrete para o tutor",
+  "repo_url": "https://github.com/kaennygranja/pet-shop-agenda",
   "live_url": null,
-  "stars": 3,
+  "stars": 2,
   "average_rating": null,
-  "created_at": "2026-09-25T15:57:47",
-  "owner": { "id": 1, "full_name": "Elismar Francelina de Carvalho" },
-  "technologies": [
-    { "id": 2, "name": "FastAPI", "category": "Framework" },
-    { "id": 3, "name": "PostgreSQL", "category": "Banco de dados" },
-    { "id": 1, "name": "Python", "category": "Linguagem" }
-  ],
+  "created_at": "2026-09-25T17:25:05",
+  "owner": { "id": 2, "full_name": "Kaenny Ribeiro Granja" },
+  "technologies": [],
   "feedbacks": []
 }
 ```
 
-Projeto inexistente responde `404`.
+Id que não existe volta `404`; id que não é número (ex.: `/api/projects/xyz/upvote`) volta `400`.
 
-### Cadastrar feedback
+### 3. O que acontece quando alguém deixa um feedback?
 
-`POST /api/projects/2/feedbacks`
+`POST /api/projects/9/feedbacks`
 
 ```json
 {
-  "author_name": "Elismar Francelina de Carvalho",
-  "comment": "Funciona bem, mas faltou um relatório de mensalidades.",
+  "author_name": "Kaenny Ribeiro Granja",
+  "comment": "As perguntas são boas, só queria poder ouvir as notas antes de responder.",
   "rating": 3
 }
 ```
 
-Resposta `201` (o projeto já tinha uma nota 5, então a média foi para 4):
+Resposta `201` (o Quiz de Teoria Musical já tinha uma nota 5; com esta nota 3 a média foi para 4.0):
 
 ```json
 {
-  "project_id": 2,
+  "project_id": 9,
   "feedback": {
     "id": 2,
-    "author_name": "Elismar Francelina de Carvalho",
-    "comment": "Funciona bem, mas faltou um relatório de mensalidades.",
+    "author_name": "Kaenny Ribeiro Granja",
+    "comment": "As perguntas são boas, só queria poder ouvir as notas antes de responder.",
     "rating": 3,
-    "created_at": "2026-09-25T15:57:49"
+    "created_at": "2026-09-25T17:25:08"
   },
   "average_rating": 4.0,
   "ratings_count": 2
 }
 ```
 
-O service salva o feedback, calcula a média com `AVG` no banco, arredonda para 1 casa decimal e grava em `projects.average_rating`, tudo na **mesma transação**. Se algo falhar no meio, nada é salvo.
+Passo a passo dentro do `FeedbackService`:
 
-### Cadastrar projeto (etapa 1)
+1. reserva o projeto no banco com `SELECT ... FOR UPDATE` até o commit: quem chegar junto espera a vez, e a média nunca é calculada em cima de notas desatualizadas;
+2. guarda o feedback;
+3. pergunta ao banco quantas notas de cada valor o projeto tem (por exemplo, duas notas 5 e uma 4) e calcula a média com 1 casa decimal, arredondando o meio para cima (4.25 vira 4.3);
+4. grava a média em `projects.average_rating`.
 
-```json
-{
-  "profile_id": 1,
-  "title": "Cardápio Digital",
-  "summary": "Cardápio online de lanchonete com pedidos pelo celular",
-  "repo_url": "https://github.com/elismarcarvalho/cardapio-digital",
-  "technology_ids": [1, 2, 3]
-}
-```
+Os quatro passos usam a mesma conexão e só são confirmados no commit do fim da requisição. Se qualquer um falhar, o rollback desfaz tudo e o feedback nunca fica salvo com a média antiga.
 
-## Validações
+A nota tem que ser 1, 2, 3, 4 ou 5, escrita sem aspas: `10`, `"cinco"` e `4.5` voltam `400`. Se o projeto não existir, a resposta é `404`.
 
-- Nomes, títulos e comentários não podem ser vazios (espaços em branco também são recusados).
-- URLs (`repo_url`, `live_url`, `github_url`, `linkedin_url`) precisam ser válidas.
-- E-mail precisa ser válido e não pode se repetir (sem diferenciar maiúsculas).
-- Tecnologia não pode ser cadastrada duas vezes (sem diferenciar maiúsculas).
-- Projeto só é criado se o perfil e todas as tecnologias informadas existirem.
-- Nota do feedback: número inteiro de 1 a 5 (`true`, `"4"` e `4.0` são recusados, sem conversão).
-- Textos não podem conter o caractere nulo (`\u0000`), que o PostgreSQL não aceita.
+## E quando dá erro?
 
-## Formato de erro
+Não importa se o problema apareceu na validação, numa regra do service ou no banco: o `app/core/errors.py` monta a resposta sempre com as mesmas chaves.
 
-Todos os erros passam pelo manipulador global em `app/core/errors.py` e saem no mesmo formato:
+| Chave | Quando aparece |
+|---|---|
+| `status` | sempre (é o próprio código HTTP) |
+| `erro` | sempre: o que aconteceu, em português |
+| `rota` | sempre: o método e o caminho que foram chamados |
+| `campos` | quando algum dado precisa ser corrigido (um texto para cada campo) |
+| `dica` | quando dá para sugerir o que fazer (JSON quebrado, rota que não existe...) |
+
+Nota fora da regra:
 
 ```json
 {
   "status": 400,
   "erro": "Os dados enviados são inválidos.",
-  "campos": { "rating": "Deve ser no máximo 5.", "comment": "Não pode ficar vazio." },
-  "rota": "POST /api/projects/2/feedbacks"
+  "rota": "POST /api/projects/9/feedbacks",
+  "campos": { "rating": "O maior valor aceito é 5." }
 }
 ```
 
-| Código | Quando acontece |
+JSON escrito com aspas simples, do jeito do Python:
+
+```json
+{
+  "status": 400,
+  "erro": "Não deu para entender o JSON enviado.",
+  "rota": "POST /api/projects/9/feedbacks",
+  "campos": { "json": "A leitura parou perto do caractere 1." },
+  "dica": "Em JSON, nomes de campo e textos vão entre aspas duplas."
+}
+```
+
+Perfil que não existe:
+
+```json
+{ "status": 404, "erro": "Perfil 424242 não encontrado.", "rota": "GET /api/profiles/424242" }
+```
+
+| Código | O que costuma causar |
 |---|---|
-| 400 | Campo inválido, parâmetro de página inválido, id da rota que não é número, JSON malformado ou enviado sem `Content-Type: application/json`, texto com o caractere nulo (`\u0000`), tecnologia inexistente no cadastro de projeto |
-| 404 | Perfil ou projeto inexistente, ou rota que não existe |
-| 405 | Método HTTP errado para a rota |
-| 409 | E-mail ou tecnologia repetidos |
-| 500 | Erro inesperado (a resposta não mostra detalhes internos; eles ficam só no log) |
-| 503 | Banco de dados fora do ar ou inacessível (a API responde, mas não consegue falar com o PostgreSQL) |
+| 400 | campo faltando ou fora da regra, nota menor que 1 ou maior que 5, `per_page=0`, id que não é número, JSON quebrado ou enviado sem `Content-Type: application/json`, texto com o caractere `\u0000`, tecnologia inexistente no cadastro de projeto |
+| 404 | perfil ou projeto que não existe; rota que não existe (essa vem com `dica`) |
+| 405 | método que a rota não aceita, ex.: `DELETE /api/projects` |
+| 409 | e-mail ou tecnologia que já estão cadastrados |
+| 500 | falha inesperada: quem chamou recebe só uma frase genérica, e o erro completo aparece no terminal do servidor (no Render, na aba *Logs*) |
+| 503 | a API respondeu, mas não conseguiu falar com o PostgreSQL |
 
-Outros exemplos:
+O FastAPI costuma responder `422` quando a validação falha. Aqui esse caso virou `400`, e o `422` também não aparece no Swagger.
 
-```json
-{ "status": 400, "erro": "O corpo da requisição não é um JSON válido.", "campos": { "body": "JSON malformado: confira aspas, vírgulas e chaves." }, "rota": "POST /api/projects/2/feedbacks" }
-```
+### O que a API recusa?
 
-```json
-{ "status": 404, "erro": "Projeto 999999 não encontrado.", "rota": "PUT /api/projects/999999/upvote" }
-```
-
-## Testando no Postman
-
-Importe `postman/DevShowcase-Grupo4.postman_collection.json`. A variável da coleção `baseUrl` vem com `http://localhost:8000`; para testar em produção, troque pela URL do Render.
-
-Rode as pastas na ordem:
-
-1. **0 - Popular banco**: cadastra tecnologias, perfis e projetos e guarda os ids em variáveis. Pode ser rodada de novo (tecnologia repetida aceita 409 e os e-mails usam `{{$timestamp}}`).
-2. **1 - Tecnologias**, **2 - Perfis**, **3 - Projetos**: endpoints da etapa 1.
-3. **4 - Listagem com filtro e páginas**, **5 - Estrelas (upvote)**, **6 - Feedbacks e média**: endpoints da etapa 2.
-
-Os casos de erro ficam no fim de cada pasta, e toda requisição tem testes conferindo o status esperado.
-
-Dá para clicar **Send** de novo em qualquer requisição ou rodar de novo só uma pasta sem os testes ficarem vermelhos: estrelas, médias e totais são conferidos em relação ao valor de antes da requisição. As pastas **5** e **6** têm um *Pre-request* que guarda as estrelas do Cardápio Digital e as notas do Controle de Academia antes de cada envio (se os ids ainda estiverem vazios, usa o projeto mais novo com esse título).
+- Nome, título e comentário vazios (ou só com espaços).
+- URL que não começa com `http://` ou `https://` em `repo_url`, `live_url`, `github_url` e `linkedin_url`.
+- E-mail inválido ou repetido. Maiúsculas não contam: `Ana@email.com` e `ana@email.com` são o mesmo e-mail.
+- Tecnologia repetida, também sem ligar para maiúsculas (`fastapi` e `FastAPI` são a mesma).
+- Projeto de um perfil que não existe (404) ou com uma tecnologia que não existe (400).
+- Nota que não seja 1, 2, 3, 4 ou 5 (número inteiro, sem aspas).
 
 ## Deploy no Render
 
-1. **Banco:** no painel do Render, clique em **New > Postgres**. Dê um nome (ex.: `devshowcase-db`), escolha a região, o plano **Free** e clique em **Create Database**.
-2. Quando o banco ficar disponível, copie a **Internal Database URL** (na página do banco, em *Connections*).
-3. **API:** clique em **New > Web Service** e conecte este repositório do GitHub. Preencha:
-   - **Language:** Python 3 (a versão 3.12 vem do arquivo `.python-version`)
-   - **Branch:** `main`
-   - **Region:** a **mesma** do banco
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-   - **Instance Type:** Free
-4. Em **Environment Variables**, adicione `DATABASE_URL` com a Internal Database URL copiada no passo 2.
-5. Em **Advanced**, deixe **Auto-Deploy** em **On Commit** (cada push na `main` publica de novo) e, se quiser, coloque `/health` em **Health Check Path**.
-6. Clique em **Create Web Service** e espere aparecer *Your service is live*. As tabelas são criadas na primeira inicialização.
-7. Abra `https://URL-DO-RENDER.onrender.com/docs`, troque o `baseUrl` do Postman para essa URL e rode a pasta **0 - Popular banco**.
+### Passo 1: o banco (New → Postgres)
 
-Observações sobre o plano Free do Render:
+| Campo no Render | O que preencher |
+|---|---|
+| Name | `grupo4-postgres` |
+| Region | escolha uma; o passo 2 precisa repetir essa região |
+| PostgreSQL Version | pode deixar a que vier marcada |
+| Instance Type | Free |
 
-- A API "dorme" depois de 15 minutos sem uso. A primeira requisição depois disso acorda o serviço e pode levar cerca de um minuto; abra o `/docs` antes de gravar o vídeo.
-- O PostgreSQL Free expira 30 dias depois de criado. Depois disso é preciso criar um banco novo, trocar a `DATABASE_URL` do Web Service e rodar de novo a pasta **0 - Popular banco** do Postman.
+Depois de **Create Database**, o Render leva alguns minutos preparando o banco. Quando ele estiver pronto, copie a **Internal Database URL** na seção *Connections*.
+
+### Passo 2: a API (New → Web Service)
+
+| Campo no Render | O que preencher |
+|---|---|
+| Source Code | este repositório do GitHub |
+| Name | `devshowcase-grupo4` (esse nome vira parte da URL) |
+| Region | igual à do banco (a Internal Database URL não funciona entre regiões diferentes) |
+| Branch | `main` |
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+| Instance Type | Free |
+| Environment Variables | `DATABASE_URL` = a Internal Database URL copiada no passo 1 |
+| Health Check Path (em *Advanced*) | `/health` |
+| Auto-Deploy (em *Advanced*) | *On Commit*, para cada push na `main` publicar de novo |
+
+### Passo 3: conferir
+
+Clique em **Deploy Web Service** e fique de olho na aba *Logs*. Quando o Render mostrar o serviço como *Live*, o `init_db` já criou as tabelas no banco novo. Abra `https://<nome-do-serviço>.onrender.com/docs` (o nosso é https://devshowcase-grupo4.onrender.com/docs), troque o `baseUrl` do Postman por esse endereço e rode a pasta **0 - Montar a vitrine** para encher o banco.
+
+## Limites do plano grátis
+
+- **A API cochila.** Se ficar 15 minutos sem receber requisição, o Render desliga o serviço grátis. Ele liga sozinho na chamada seguinte, só que essa primeira resposta pode demorar quase um minuto. Na hora de gravar, abra o `/health` primeiro e espere aparecer `{"status": "ok"}`.
+- **O banco grátis tem validade.** O PostgreSQL Free vence 30 dias depois de criado. Passou disso? Crie outro banco, cole a nova Internal Database URL na `DATABASE_URL` do Web Service e rode a pasta **0 - Montar a vitrine** outra vez (a API cria as tabelas de novo ao ligar).
+- **Um banco grátis por vez.** Cada conta só pode ter um PostgreSQL Free ativo; para criar outro, apague o antigo antes.
+
+## Rodando na sua máquina
+
+Você vai precisar do Python 3.12 e do PostgreSQL instalados (o instalador do PostgreSQL já traz o pgAdmin, se preferir fazer tudo por janela).
+
+1. Crie um banco chamado `devshowcase`. Pelo terminal:
+
+   ```bash
+   createdb -U postgres devshowcase
+   ```
+
+2. Faça uma cópia do `.env.example` com o nome `.env` e troque usuário e senha pelos do seu PostgreSQL:
+
+   ```
+   DATABASE_URL=postgresql://usuario:senha@localhost:5432/devshowcase
+   ```
+
+   O `.gitignore` já ignora o `.env`, então a senha nunca sobe para o GitHub.
+
+3. Crie o ambiente virtual, instale as dependências e ligue a API:
+
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate          # no Windows
+   source .venv/bin/activate       # no Linux ou Mac
+
+   pip install -r requirements.txt
+   uvicorn app.main:app --reload
+   ```
+
+A API responde em `http://127.0.0.1:8000`. Ao ligar, ela cria as tabelas que faltarem (`CREATE TABLE IF NOT EXISTS`), então o banco vazio do passo 1 já basta. Se o `.env` estiver faltando, a API nem sobe e avisa: *"Falta a DATABASE_URL: sem ela a API não sabe em qual PostgreSQL entrar..."*.
+
+## Por dentro do código: como as pastas se dividem?
+
+| Parte | O que usamos |
+|---|---|
+| Linguagem | Python 3.12 |
+| Web e documentação | FastAPI (Swagger em `/docs`) rodando no Uvicorn |
+| Validação dos DTOs | Pydantic 2 |
+| Banco de dados | PostgreSQL, com psycopg 3 e SQL puro |
+| Configuração | python-dotenv, que lê a `DATABASE_URL` do `.env` |
+| Testes manuais da API | Postman |
+| Hospedagem | Render (Web Service + PostgreSQL) |
+
+| Entidade | Com quem se liga |
+|---|---|
+| **Profile**: quem publica | tem vários Projects (1:N) |
+| **Project**: o trabalho na vitrine, com `stars` e `average_rating` | pertence a um Profile (N:1), usa várias Technologies (N:N) e recebe vários Feedbacks (1:N) |
+| **Technology**: linguagem, framework, banco... | aparece em vários Projects (N:N, pela tabela `project_technologies`) |
+| **Feedback**: comentário e uma nota (1 a 5) | pertence a um Project (N:1) |
+
+```
+app/
+├── main.py              # monta o FastAPI: textos do Swagger, ordem das rotas e o / que leva ao /docs
+├── core/
+│   ├── database.py      # lê a DATABASE_URL, abre uma conexão por requisição e cria as tabelas
+│   ├── errors.py        # BusinessError e as filhas, e o manipulador que padroniza os erros
+│   └── types.py         # textos já validados: obrigatório, opcional e o filtro da URL
+└── modules/             # um pacote por entidade, todos com as mesmas quatro camadas
+    ├── profiles/
+    ├── technologies/
+    ├── projects/        # também a busca por tecnologia, as páginas e as estrelas
+    └── feedbacks/       # também o cálculo da média
+postman/
+└── DevShowcase-Grupo4.postman_collection.json   # o roteiro de testes do vídeo
+```
+
+Dentro de cada módulo o caminho de uma requisição é sempre o mesmo:
+
+- **router.py** recebe a chamada HTTP e diz quais DTOs entram e saem;
+- **schemas.py** tem os DTOs: o que entra (com as validações) e o que sai;
+- **service.py** aplica as regras: e-mail sem repetir, tecnologia sem repetir, perfil e tecnologias que precisam existir, cálculo da média;
+- **repository.py** conversa com o banco em SQL.
+
+## Coleção do Postman: em que ordem rodar?
+
+| Pasta | O que mostra |
+|---|---|
+| **0 - Montar a vitrine** | cria 5 tecnologias, 2 perfis (Elismar e Kaenny) e 6 projetos (academia, lanchonete, pet shop...) e anota os ids |
+| **1 - Tecnologias**, **2 - Perfis**, **3 - Projetos** | o que já existia na etapa 1, com os erros de cada cadastro |
+| **4 - Listagem: filtro e páginas** | páginas, filtro por FastAPI escrito de três jeitos, página depois do fim, erros `400` e rota que não existe |
+| **5 - Estrelas (upvote)** | 1ª e 2ª estrela num projeto novo, projeto que não existe e id `xyz` |
+| **6 - Feedbacks e média** | nota 5 (média 5.0), nota 3 (média 4.0), média gravada no projeto, nota 10, nota `"cinco"`, JSON com aspas simples e projeto que não existe |
+
+Toda requisição tem teste do status esperado, e os erros ficam no fim da pasta do assunto.
+
+**E se precisar regravar um pedaço do vídeo?** Dá para clicar *Send* de novo em qualquer requisição, ou rodar uma pasta sozinha, sem teste vermelho:
+
+- a pasta **0** aceita `201` ou `409` nas tecnologias e usa `{{$timestamp}}` nos e-mails;
+- a pasta **4** confere cada resposta por ela mesma (ordem, filtro, totais), então a ordem em que as requisições rodam não importa;
+- as pastas **5** e **6** não aproveitam projetos antigos: o *Pre-request* da primeira requisição cria um projeto só para a demonstração (Pet Shop Agenda e Quiz de Teoria Musical), e os testes esperam números exatos (1 e depois 2 estrelas; média 5.0 e depois 4.0). As requisições seguintes conferem se o projeto está no ponto certo antes de enviar; se não estiver (porque o *Send* foi clicado de novo, ou as variáveis estão vazias), preparam outro projeto já com as estrelas ou notas que faltam.

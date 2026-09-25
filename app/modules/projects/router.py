@@ -3,9 +3,9 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Query, status
 
 from app.core.database import DbConnection
-from app.core.errors import doc_erro
+from app.core.errors import documentar_erro
 from app.core.types import FilterText
-from .schemas import ProjectCreate, ProjectPage, ProjectResponse
+from .schemas import ProjectCreate, ProjectListing, ProjectResponse
 from .service import ProjectService
 
 router = APIRouter(prefix="/api/projects", tags=["Projetos"])
@@ -15,13 +15,17 @@ router = APIRouter(prefix="/api/projects", tags=["Projetos"])
     "",
     response_model=ProjectResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Cadastrar projeto",
-    response_description="Projeto cadastrado",
-    description="Cadastra um projeto ligado a um perfil e às tecnologias usadas (relação N:N).",
+    summary="Publicar um projeto na vitrine",
+    response_description="Projeto publicado, já com dono e tecnologias",
+    description=(
+        "Informe em `profile_id` quem fez o projeto e em `technology_ids` os ids das tecnologias "
+        "usadas (id repetido é ignorado). Todo projeto começa com 0 estrelas e sem média."
+    ),
     responses={
-        400: doc_erro(400, "Os dados enviados são inválidos.", "POST /api/projects",
-                      {"title": "Não pode ficar vazio.", "repo_url": "Informe uma URL válida (ex.: https://github.com/usuario)."}),
-        404: doc_erro(404, "Perfil 999 não encontrado.", "POST /api/projects"),
+        400: documentar_erro(400, "Os dados enviados são inválidos.", "POST /api/projects",
+                             {"repo_url": "A URL deve começar com http:// ou https://.",
+                              "technology_ids": "Deve ser uma lista."}),
+        404: documentar_erro(404, "Perfil 424242 não encontrado.", "POST /api/projects"),
     },
 )
 def create_project(body: ProjectCreate, db: DbConnection):
@@ -30,40 +34,44 @@ def create_project(body: ProjectCreate, db: DbConnection):
 
 @router.get(
     "",
-    response_model=ProjectPage,
-    summary="Listar projetos com filtro por tecnologia e paginação",
-    response_description="Página de projetos",
+    response_model=ProjectListing,
+    summary="Ver os projetos (com páginas e busca por tecnologia)",
+    response_description="Os totais do filtro e os projetos da página pedida",
     description=(
-        "Lista os projetos do mais novo para o mais antigo. Use `tech` para filtrar pelo nome da "
-        "tecnologia (sem diferenciar maiúsculas) e `page`/`per_page` para paginar. "
-        "Uma página além do fim devolve `results` vazio."
+        "Os projetos publicados por último aparecem primeiro. Quer só os que usam FastAPI? "
+        "Use `?tech=fastapi` (tanto faz escrever fastapi, FastAPI ou FASTAPI). Para andar pela "
+        "lista, combine `page` e `per_page`. Uma página depois da última não dá erro: `results` "
+        "volta como lista vazia e os totais continuam certos."
     ),
     responses={
-        400: doc_erro(400, "Os dados enviados são inválidos.", "GET /api/projects",
-                      {"page": "Deve ser no mínimo 1.", "per_page": "Deve ser no máximo 20."}),
+        400: documentar_erro(400, "Os dados enviados são inválidos.", "GET /api/projects",
+                             {"per_page": "O menor valor aceito é 1."}),
     },
 )
 def list_projects(
     db: DbConnection,
-    tech: Annotated[Optional[FilterText], Query(description="Nome da tecnologia (ex.: python, PYTHON, Python).",
-                                                examples=["python"])] = None,
-    page: Annotated[int, Query(ge=1, description="Número da página, começando em 1.")] = 1,
-    per_page: Annotated[int, Query(ge=1, le=20, description="Itens por página (1 a 20).")] = 5,
+    tech: Annotated[Optional[FilterText], Query(description="Tecnologia que o projeto precisa usar.",
+                                                examples=["fastapi"])] = None,
+    page: Annotated[int, Query(ge=1, description="Qual página ver (a primeira é a 1).")] = 1,
+    per_page: Annotated[int, Query(ge=1, le=20, description="Tamanho da página (mínimo 1, máximo 20).")] = 5,
 ):
-    return ProjectService(db).list_page(tech, page, per_page)
+    return ProjectService(db).list_filtered(tech, page, per_page)
 
 
 @router.put(
     "/{project_id}/upvote",
     response_model=ProjectResponse,
-    summary="Dar uma estrela ao projeto (upvote)",
-    response_description="Projeto com a estrela somada",
-    description="Soma 1 às estrelas do projeto com incremento atômico no banco (`stars = stars + 1`).",
+    summary="Dar uma estrela a um projeto",
+    response_description="Projeto com a estrela já contada",
+    description=(
+        "Vai sem corpo: cada chamada soma 1 em `stars`. Quem soma é o PostgreSQL, no comando "
+        "`UPDATE projects SET stars = stars + 1`, então duas pessoas clicando juntas dão duas estrelas."
+    ),
     responses={
-        400: doc_erro(400, "Os dados enviados são inválidos.", "PUT /api/projects/abc/upvote",
-                      {"project_id": "Deve ser um número inteiro."}),
-        404: doc_erro(404, "Projeto 999 não encontrado.", "PUT /api/projects/999/upvote"),
+        400: documentar_erro(400, "Os dados enviados são inválidos.", "PUT /api/projects/xyz/upvote",
+                             {"project_id": "Deve ser um número inteiro."}),
+        404: documentar_erro(404, "Nenhum projeto tem o id 424242.", "PUT /api/projects/424242/upvote"),
     },
 )
-def upvote_project(project_id: int, db: DbConnection):
-    return ProjectService(db).upvote(project_id)
+def star_project(project_id: int, db: DbConnection):
+    return ProjectService(db).give_star(project_id)

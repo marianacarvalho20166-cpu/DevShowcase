@@ -1,5 +1,3 @@
-from decimal import ROUND_HALF_UP, Decimal
-
 from psycopg import Connection
 
 from app.core.errors import NotFoundError
@@ -8,24 +6,32 @@ from .repository import FeedbackRepository
 from .schemas import FeedbackCreate, FeedbackCreated, FeedbackResponse
 
 
+def _average_one_decimal(points: int, count: int) -> float:
+    # média em décimos, arredondando meio para cima só com inteiros: 4.25 vira 4.3 e 4.24 vira 4.2
+    tenths = (points * 20 + count) // (count * 2)
+    return tenths / 10
+
+
 class FeedbackService:
     def __init__(self, db: Connection):
         self.repo = FeedbackRepository(db)
         self.projects = ProjectRepository(db)
 
-    def create(self, project_id: int, data: FeedbackCreate) -> FeedbackCreated:
-        # trava a linha do projeto até o commit: dois feedbacks ao mesmo tempo não perdem a média
+    def add(self, project_id: int, data: FeedbackCreate) -> FeedbackCreated:
+        # FOR UPDATE: se duas pessoas avaliarem o mesmo projeto juntas, a segunda espera a primeira terminar
         if self.projects.lock(project_id) is None:
-            raise NotFoundError(f"Projeto {project_id} não encontrado.")
+            raise NotFoundError(f"Nenhum projeto tem o id {project_id}.")
 
         row = self.repo.insert(project_id, data.author_name, data.comment, data.rating)
-        stats = self.repo.rating_stats(project_id)
-        average = Decimal(stats["average"]).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
-        self.projects.update_average(project_id, average)
+        by_rating = self.repo.count_by_rating(project_id)
+        count = sum(r["quantity"] for r in by_rating)
+        points = sum(r["rating"] * r["quantity"] for r in by_rating)
+        average = _average_one_decimal(points, count)
+        self.projects.save_average(project_id, average)  # o commit sai junto com o do feedback
 
         return FeedbackCreated(
             project_id=project_id,
             feedback=FeedbackResponse(**row),
-            average_rating=float(average),
-            ratings_count=stats["total"],
+            average_rating=average,
+            ratings_count=count,
         )

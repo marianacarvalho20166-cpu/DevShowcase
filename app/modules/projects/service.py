@@ -10,7 +10,7 @@ from app.modules.profiles.repository import ProfileRepository
 from app.modules.technologies.repository import TechnologyRepository
 from app.modules.technologies.schemas import TechnologyResponse
 from .repository import ProjectRepository
-from .schemas import ProjectCreate, ProjectOwner, ProjectPage, ProjectResponse
+from .schemas import ProjectCreate, ProjectListing, ProjectOwner, ProjectResponse
 
 
 def _url(value):
@@ -39,13 +39,12 @@ class ProjectService:
         self.repo.link_technologies(project_id, data.technology_ids)
         return self._to_response(self.repo.find_by_id(project_id))
 
-    def list_page(self, tech: Optional[str], page: int, per_page: int) -> ProjectPage:
-        tech = tech.strip() if tech else None
-        total = self.repo.count(tech)
+    def list_filtered(self, tech: Optional[str], page: int, per_page: int) -> ProjectListing:
+        total = self.repo.count_matching(tech)
         offset = (page - 1) * per_page
-        # página além do fim: nem consulta, devolve lista vazia
-        rows = self.repo.find_page(tech, per_page, offset) if offset < total else []
-        return ProjectPage(
+        # pediu uma página depois da última: nem vai ao banco buscar linhas
+        rows = self.repo.fetch_slice(tech, per_page, offset) if offset < total else []
+        return ProjectListing(
             total=total,
             page=page,
             per_page=per_page,
@@ -53,9 +52,9 @@ class ProjectService:
             results=[self._to_response(row) for row in rows],
         )
 
-    def upvote(self, project_id: int) -> ProjectResponse:
+    def give_star(self, project_id: int) -> ProjectResponse:
         if self.repo.add_star(project_id) is None:
-            raise NotFoundError(f"Projeto {project_id} não encontrado.")
+            raise NotFoundError(f"Nenhum projeto tem o id {project_id}.")
         return self._to_response(self.repo.find_by_id(project_id))
 
     def _to_response(self, row: dict) -> ProjectResponse:

@@ -13,12 +13,13 @@ class FeedbackRepository:
             (project_id, author_name, comment, rating),
         ).fetchone()
 
-    def rating_stats(self, project_id: int) -> dict:
-        """Média (AVG) e quantidade de notas do projeto, calculadas pelo banco."""
+    def count_by_rating(self, project_id: int) -> list[dict]:
+        """Quantas vezes o projeto recebeu cada nota, ex.: [{"rating": 5, "quantity": 2}, ...]."""
         return self.db.execute(
-            "SELECT AVG(rating) AS average, COUNT(*) AS total FROM feedbacks WHERE project_id = %s",
+            """SELECT rating, COUNT(*) AS quantity FROM feedbacks
+               WHERE project_id = %s GROUP BY rating""",
             (project_id,),
-        ).fetchone()
+        ).fetchall()
 
     def find_by_project(self, project_id: int) -> list[dict]:
         return self.db.execute(
